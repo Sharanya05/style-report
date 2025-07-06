@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Style-Confidence Nexus: An Interactive Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a narrative journey, moving from problem to solution. It's structured in five logical, anchor-linked sections: 1. The core consumer 'Wardrobe Dilemma' (using interactive cards to explain psychological concepts), 2. The 'Stylist's Hustle' (using icons for quick insights), 3. An interactive 'Human vs. AI' comparison (using a toggle to contrast models), 4. The 'Market Opportunity' (visualized with a clear bar chart), and 5. 'The Hybrid Future' (a conceptual flowchart showing the solution). This structure was chosen to guide the user through the complex issues logically, building a case for the final strategic recommendation, which is far more intuitive and engaging than a linear report format. -->
+    <!-- Visualization & Content Choices: 1. Consumer Psychology -> Goal: Inform/Organize -> Viz: Interactive Cards + Text Blocks -> Interaction: Click card to show details -> Justification: Breaks down complex theories into manageable, user-driven chunks. Method: JS DOM manipulation. 2. Human vs. AI Comparison -> Goal: Compare -> Viz: Toggled content cards -> Interaction: Switch highlights Human or AI attributes -> Justification: Dynamic A/B comparison is more engaging than a static table. Method: JS class toggling. 3. Market Forecasts -> Goal: Inform/Compare -> Viz: Bar Chart -> Interaction: Hover tooltips -> Justification: Best for comparing category magnitudes; tooltips provide detail without clutter. Library: Chart.js/Canvas. 4. Hybrid Solution -> Goal: Organize/Explain -> Viz: HTML/CSS Flowchart Diagram -> Interaction: Hover effects -> Justification: Visually explains the synergistic process better than text. Method: Tailwind CSS (Flexbox/Grid). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .active-nav { color: #A45C40; border-bottom-width: 2px; border-color: #A45C40; }
+        .inactive-nav { color: #4A4A4A; border-bottom-width: 2px; border-color: transparent; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .perspective-btn.active { background-color: #A45C40; color: #F5F5F5; }
+        .perspective-btn.inactive { background-color: #E6DCD1; color: #4A4A4A; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 300px; max-height: 500px; }
+        @media (min-width: 768px) { .chart-container { height: 450px; } }
+        .transition-all-fast { transition: all 0.3s ease-in-out; }
+        .transition-all-slow { transition: all 0.5s ease-in-out; }
+        .card-active { border-color: #A45C40; background-color: #FEFBF6; }
+        .card-inactive { border-color: #E6DCD1; background-color: #FFFFFF; }
+        .comparison-card-active { opacity: 1; transform: translateY(0); }
+        .comparison-card-inactive { opacity: 0.5; transform: translateY(10px); }
+    </style>
+</head>
+<body class="bg-[#F5F5F5] text-[#4A4A4A] antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-[#A45C40]">Style Nexus</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#dilemma" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium hover:text-[#A45C40] transition-colors duration-300">The Dilemma</a>
+                        <a href="#stylist" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium hover:text-[#A45C40] transition-colors duration-300">The Stylist</a>
+                        <a href="#comparison" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium hover:text-[#A45C40] transition-colors duration-300">Human vs. AI</a>
+                        <a href="#market" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium hover:text-[#A45C40] transition-colors duration-300">Market</a>
+                        <a href="#future" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium hover:text-[#A45C40] transition-colors duration-300">The Future</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-[#4A4A4A] leading-tight">The Style-Confidence Nexus</h1>
+                <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-[#6B7280]">
+                    An interactive exploration into why we struggle with our wardrobes, the challenges stylists face, and the hybrid future of personal styling.
+                </p>
+            </div>
+        </section>
+
+        <section id="dilemma" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-[#4A4A4A] sm:text-4xl">The Wardrobe Dilemma</h2>
+                    <p class="mt-4 text-lg text-[#6B7280] max-w-2xl mx-auto">The daily struggle of "what to wear" is rarely about a lack of clothes. It's a complex issue rooted in psychology and a critical knowledge gap. Click on a concept below to explore the real reasons behind the frustration.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div id="dilemma-card-fatigue" class="dilemma-card card-active p-4 border-2 rounded-lg cursor-pointer transition-all-fast hover:shadow-lg">
+                            <h3 class="font-bold text-lg text-[#A45C40]">Decision Fatigue</h3>
+                            <p class="text-sm text-[#6B7280] mt-1">An overwhelming number of choices leads to stress and anxiety.</p>
+                        </div>
+                        <div id="dilemma-card-cognition" class="dilemma-card card-inactive p-4 border-2 rounded-lg cursor-pointer transition-all-fast hover:shadow-lg">
+                            <h3 class="font-bold text-lg text-[#A45C40]">Enclothed Cognition</h3>
+                            <p class="text-sm text-[#6B7280] mt-1">What we wear directly influences our mood and performance.</p>
+                        </div>
+                        <div id="dilemma-card-identity" class="dilemma-card card-inactive p-4 border-2 rounded-lg cursor-pointer transition-all-fast hover:shadow-lg">
+                            <h3 class="font-bold text-lg text-[#A45C40]">Identity Crisis</h3>
+                            <p class="text-sm text-[#6B7280] mt-1">Clothing is a language; the struggle is often one of self-expression.</p>
+                        </div>
+                        <div id="dilemma-card-knowledge" class="dilemma-card card-inactive p-4 border-2 rounded-lg cursor-pointer transition-all-fast hover:shadow-lg">
+                            <h3 class="font-bold text-lg text-[#A45C40]">Knowledge Gap</h3>
+                            <p class="text-sm text-[#6B7280] mt-1">Not knowing what fits our body, style, or lifestyle.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="dilemma-content-container" class="bg-white p-6 rounded-lg shadow-md min-h-[250px]">
+                        <div id="content-fatigue" class="dilemma-content">
+                            <h4 class="text-xl font-bold text-[#4A4A4A] mb-2">The "Nothing to Wear" Paradox</h4>
+                            <p class="text-[#6B7280]">Despite overflowing closets, many feel they have "nothing to wear." This isn't a lack of clothes but a symptom of **decision fatigue**. The sheer volume of choices is mentally exhausting, making it feel impossible to find a viable option. Consumers are already trying to solve this by creating "capsule wardrobes" and personal "uniforms," signaling a clear need for a system, not more clothing.</p>
+                        </div>
+                         <div id="content-cognition" class="dilemma-content hidden">
+                            <h4 class="text-xl font-bold text-[#4A4A4A] mb-2">More Than Just Fabric</h4>
+                            <p class="text-[#6B7280]">"Enclothed cognition" is the psychological phenomenon where our clothing's symbolic meaning and physical sensation impact our confidence and abilities. A tailored blazer can make us feel powerful, while a soft sweater provides comfort. This proves that what we wear is a tool for **mood regulation and cognitive enhancement**, making the daily choice deeply personal and impactful.</p>
+                        </div>
+                         <div id="content-identity" class="dilemma-content hidden">
+                            <h4 class="text-xl font-bold text-[#4A4A4A] mb-2">A Wearable Biography</h4>
+                            <p class="text-[#6B7280]">Clothing is a primary tool for **self-expression and identity formation**. It's a non-verbal language that communicates who we are. The daily struggle to choose an outfit can be a manifestation of a deeper struggle to define or project one's identity, especially in the age of social media where personal style has become a curated performance.</p>
+                        </div>
+                         <div id="content-knowledge" class="dilemma-content hidden">
+                            <h4 class="text-xl font-bold text-[#4A4A4A] mb-2">Fit, Form, and Personal Style</h4>
+                            <p class="text-[#6B7280]">A fundamental barrier is the lack of objective knowledge about what suits us. Many struggle to identify their **body type**, understand which silhouettes are flattering, or define an authentic personal style. This leads to poor purchasing decisions, a cluttered wardrobe of items that don't work together, and a persistent feeling of dissatisfaction.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stylist" class="py-16 sm:py-24 bg-white">
+             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-[#4A4A4A] sm:text-4xl">The Stylist's Hustle</h2>
+                    <p class="mt-4 text-lg text-[#6B7280] max-w-2xl mx-auto">While consumers struggle, the professionals who can help them face their own significant hurdles. Being a freelance stylist is an entrepreneurial endeavor with relentless demands beyond the creative work.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-[#E6DCD1] mx-auto mb-4">
+                            <span class="text-3xl">🎯</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-[#4A4A4A]">Client Acquisition</h3>
+                        <p class="mt-2 text-[#6B7280]">The biggest challenge is finding a steady stream of clients. It requires constant networking, social media management, and outreach—a "hustle" that consumes enormous time and energy.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-[#E6DCD1] mx-auto mb-4">
+                            <span class="text-3xl">💰</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-[#4A4A4A]">Financial Pressure</h3>
+                        <p class="mt-2 text-[#6B7280]">Stylists must manage client budgets while facing price pressure from competitors. This creates a financially precarious career path, even for experienced professionals.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-[#E6DCD1] mx-auto mb-4">
+                            <span class="text-3xl">📋</span>
+                        </div>
+                        <h3 class="text-xl font-semibold text-[#4A4A4A]">Administrative Burden</h3>
+                        <p class="mt-2 text-[#6B7280]">Beyond styling, they are a one-person business responsible for scheduling, invoicing, and marketing, often without the business acumen to do it all effectively.</p>
+                    </div>
+                </div>
+             </div>
+        </section>
+
+        <section id="comparison" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-[#4A4A4A] sm:text-4xl">Human vs. AI: The Two Models of Styling</h2>
+                    <p class="mt-4 text-lg text-[#6B7280] max-w-2xl mx-auto">The styling world is divided. Traditional human stylists offer depth and empathy, while AI promises scale and accessibility. Use the toggle below to compare their strengths and weaknesses.</p>
+                </div>
+                
+                <div class="flex justify-center mb-8">
+                    <div class="flex items-center bg-[#E6DCD1] rounded-full p-1">
+                        <button id="human-btn" class="perspective-btn active w-32 py-2 px-4 rounded-full text-sm font-semibold transition-all-fast">Human Stylist</button>
+                        <button id="ai-btn" class="perspective-btn inactive w-32 py-2 px-4 rounded-full text-sm font-semibold transition-all-fast">AI Stylist</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div id="comparison-card-personalization" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Personalization</h4>
+                        <p id="personalization-text" class="text-sm text-[#6B7280] mt-1">Understands deep context, emotions, and unspoken needs. Reads between the lines.</p>
+                    </div>
+                    <div id="comparison-card-trust" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Emotional Connection</h4>
+                        <p id="trust-text" class="text-sm text-[#6B7280] mt-1">Builds trust through empathy and support. Creates a "life-changing" experience.</p>
+                    </div>
+                    <div id="comparison-card-cost" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Cost</h4>
+                        <p id="cost-text" class="text-sm text-[#6B7280] mt-1">A premium, high-value luxury service with significant fees.</p>
+                    </div>
+                     <div id="comparison-card-scale" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Scalability</h4>
+                        <p id="scale-text" class="text-sm text-[#6B7280] mt-1">Inherently limited. A stylist's time is finite; they can only serve a few clients.</p>
+                    </div>
+                     <div id="comparison-card-education" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Education</h4>
+                        <p id="education-text" class="text-sm text-[#6B7280] mt-1">Teaches the "why" behind choices, empowering clients with lasting knowledge.</p>
+                    </div>
+                     <div id="comparison-card-privacy" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Data Privacy</h4>
+                        <p id="privacy-text" class="text-sm text-[#6B7280] mt-1">Low risk. Trust is paramount and data is confined to the one-on-one relationship.</p>
+                    </div>
+                     <div id="comparison-card-nuance" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Creativity & Nuance</h4>
+                        <p id="nuance-text" class="text-sm text-[#6B7280] mt-1">Offers genuine creativity, pushes boundaries, and understands subtle nuances.</p>
+                    </div>
+                    <div id="comparison-card-accessibility" class="comparison-card transition-all-slow bg-white p-4 rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-lg">Accessibility</h4>
+                        <p id="accessibility-text" class="text-sm text-[#6B7280] mt-1">Limited by geography and requires scheduling appointments in advance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="market" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-[#4A4A4A] sm:text-4xl">A Multi-Billion Dollar Opportunity</h2>
+                    <p class="mt-4 text-lg text-[#6B7280] max-w-2xl mx-auto">The market for personal styling and fashion technology is not niche—it's a massive, rapidly expanding industry fueled by consumer demand for personalization. The chart below shows forecasted market growth, highlighting the scale of the opportunity.</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="marketChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-[#4A4A4A] sm:text-4xl">The Hybrid Future: Human-in-the-Loop</h2>
+                    <p class="mt-4 text-lg text-[#6B7280] max-w-2xl mx-auto">The greatest opportunity lies not in choosing between human and machine, but in integrating them. A hybrid model leverages technology to empower the stylist, creating a service that is both scalable and deeply personal.</p>
+                </div>
+                
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
+                        <div class="flex-1 text-center p-4">
+                            <h3 class="text-xl font-semibold mb-2 text-[#A45C40]">Technology Supercharges</h3>
+                             <div class="space-y-3">
+                                <div class="bg-white p-3 rounded-lg shadow-sm text-left"><span class="mr-2">🤖</span> AI Body & Skin Tone Analysis</div>
+                                <div class="bg-white p-3 rounded-lg shadow-sm text-left"><span class="mr-2">👚</span> Digital Wardrobe Organization</div>
+                                <div class="bg-white p-3 rounded-lg shadow-sm text-left"><span class="mr-2">💡</span> Data-Driven Insights</div>
+                             </div>
+                        </div>
+
+                        <div class="text-5xl text-[#E6DCD1] mx-4 font-thin transform rotate-90 md:rotate-0">+</div>
+
+                        <div class="flex-1 text-center p-4">
+                             <h3 class="text-xl font-semibold mb-2 text-[#A45C40]">Human Expertise Delivers</h3>
+                             <div class="space-y-3">
+                                 <div class="bg-white p-3 rounded-lg shadow-sm text-left"><span class="mr-2">❤️</span> Empathy & Trust Building</div>
+                                 <div class="bg-white p-3 rounded-lg shadow-sm text-left"><span class="mr-2">🎨</span> Creativity & Nuanced Guidance</div>
+                                 <div class="bg-white p-3 rounded-lg shadow-sm text-left"><span class="mr-2">🎓</span> Transformational Education</div>
+                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center my-8">
+                        <div class="text-3xl text-[#A45C40] transform md:-rotate-90">↓</div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                        <h3 class="text-2xl font-bold text-[#4A4A4A]">The Empowered Stylist</h3>
+                        <p class="text-[#6B7280] mt-2 max-w-xl mx-auto">Freed from repetitive tasks, the stylist focuses on high-value, human-centric work, providing a transformational client experience that is both efficient and deeply empathetic, creating a defensible and scalable business model.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-[#4A4A4A] text-white">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>Interactive Report based on "The Style-Confidence Nexus" research.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const dilemmaCards = document.querySelectorAll('.dilemma-card');
+    const dilemmaContents = document.querySelectorAll('.dilemma-content');
+
+    dilemmaCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const contentId = 'content-' + card.id.split('-')[2];
+            
+            dilemmaCards.forEach(c => c.classList.replace('card-active', 'card-inactive'));
+            card.classList.replace('card-inactive', 'card-active');
+
+            dilemmaContents.forEach(content => {
+                if (content.id === contentId) {
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    const comparisonData = {
+        human: {
+            personalization: "Understands deep context, emotions, and unspoken needs. Reads between the lines.",
+            trust: "Builds trust through empathy and support. Creates a 'life-changing' experience.",
+            cost: "A premium, high-value luxury service with significant fees.",
+            scale: "Inherently limited. A stylist's time is finite; they can only serve a few clients.",
+            education: "Teaches the 'why' behind choices, empowering clients with lasting knowledge.",
+            privacy: "Low risk. Trust is paramount and data is confined to the one-on-one relationship.",
+            nuance: "Offers genuine creativity, pushes boundaries, and understands subtle nuances.",
+            accessibility: "Limited by geography and requires scheduling appointments in advance."
+        },
+        ai: {
+            personalization: "Relies on explicit data and algorithms. Struggles with subtlety, mood, and complex context.",
+            trust: "No genuine empathy. Trust is eroded by data privacy concerns and potential for bias.",
+            cost: "Low to free. Democratizes access to basic advice with subscription models.",
+            scale: "Highly scalable. Can serve millions of users simultaneously with minimal marginal cost.",
+            education: "Provides recommendations (the 'what') but rarely offers deep educational context (the 'why').",
+            privacy: "High risk. Relies on vast data collection with risks of misuse and lack of transparency.",
+            nuance: "Often repetitive. Can stifle creativity by relying only on past trends and known data.",
+            accessibility: "High. Available 24/7, on-demand, from anywhere via a smartphone."
+        }
+    };
+
+    const humanBtn = document.getElementById('human-btn');
+    const aiBtn = document.getElementById('ai-btn');
+    const comparisonCards = document.querySelectorAll('.comparison-card');
+
+    function updateComparisonView(perspective) {
+        const data = comparisonData[perspective];
+        
+        Object.keys(data).forEach(key => {
+            const textElement = document.getElementById(`${key}-text`);
+            if (textElement) {
+                textElement.textContent = data[key];
+            }
+        });
+
+        if (perspective === 'human') {
+            humanBtn.classList.replace('inactive', 'active');
+            aiBtn.classList.replace('active', 'inactive');
+            comparisonCards.forEach(c => c.classList.replace('comparison-card-inactive', 'comparison-card-active'));
+        } else {
+            aiBtn.classList.replace('inactive', 'active');
+            humanBtn.classList.replace('active', 'inactive');
+            comparisonCards.forEach(c => c.classList.replace('comparison-card-active', 'comparison-card-inactive'));
+        }
+    }
+
+    humanBtn.addEventListener('click', () => updateComparisonView('human'));
+    aiBtn.addEventListener('click', () => updateComparisonView('ai'));
+
+    updateComparisonView('human');
+    
+    const marketCtx = document.getElementById('marketChart').getContext('2d');
+    new Chart(marketCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Online Personal Stylist Services (2032)', 'Virtual Personal Styling Services (2032)', 'AI-Driven Personal Styling (2033)'],
+            datasets: [{
+                label: 'Forecasted Market Size (USD Billions)',
+                data: [1200, 18, 13.13],
+                backgroundColor: [
+                    'rgba(164, 92, 64, 0.7)',
+                    'rgba(230, 220, 209, 0.9)',
+                    'rgba(107, 114, 128, 0.7)'
+                ],
+                borderColor: [
+                    '#A45C40',
+                    '#E6DCD1',
+                    '#6B7280'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Market Size in Billions (USD)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value + 'B'
+                        }
+                    }
+                },
+                y: {
+                    ticks: {
+                       autoSkip: false,
+                       callback: function(value, index, values) {
+                            const label = this.getLabelForValue(value);
+                            if (label.length > 25) {
+                                return label.match(/.{1,25}/g);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.x !== null) {
+                                label += '$' + context.parsed.x + ' Billion';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.replace('active-nav', 'inactive-nav');
+                    if (link.getAttribute('href').substring(1) === entry.target.id) {
+                        link.classList.replace('inactive-nav', 'active-nav');
+                    }
+                });
+            }
+        });
+    }, { rootMargin: "-50% 0px -50% 0px" });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+});
+</script>
+
+</body>
+</html>
